@@ -1,15 +1,15 @@
 variable "instance_count" {
-    default=1
-    type   = number
+    description= "This is the no. of ec2 instance"
+    type       = number
 }
 
 variable "instance_type"{
-    default="c7i-flex.large"
+    description="This is instance type for postgres ec2"
     type   =string
 }
 
 variable "ec2_ami_id"{
-    default="ami-0e5497a77ef21b5ac"
+    default="This is the instance ami id for postgres ec2"
     type   =string
 }
 

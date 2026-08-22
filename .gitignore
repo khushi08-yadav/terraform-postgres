@@ -1,0 +1,8 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+
+terraform.tf
+*.tfvars
+terra-k8s-key
+terra-k8s-key.pub
