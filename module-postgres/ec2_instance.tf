@@ -1,9 +1,9 @@
 # key pair(login)
 
-resource "aws_key_pair" "my_ec2_key"{
+data "aws_key_pair" "my_ec2_key"{
 
   key_name   =var.ec2_key_name
-  public_key = file("${path.root}/terra-k8s-key.pub")
+  
 }
 
 # vpc and security group
@@ -60,9 +60,9 @@ resource "aws_security_group" "allow_ssh" {
 # EC2 instance 
 resource "aws_instance" "my_ec2" {
   count           =var.instance_count
-  depends_on      = [aws_security_group.allow_ssh, aws_key_pair.my_ec2_key]
+  depends_on      = [aws_security_group.allow_ssh]
   ami             = var.ec2_ami_id
-  key_name        = aws_key_pair.my_ec2_key.key_name
+  key_name        = data.aws_key_pair.my_ec2_key.key_name
   instance_type   = var.instance_type
   security_groups = [aws_security_group.allow_ssh.name]
   user_data       =file("${path.module}/install-k8s.sh")
