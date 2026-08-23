@@ -3,7 +3,7 @@
 resource "aws_key_pair" "my_ec2_key"{
 
   key_name  =var.ec2_key_name
-  public_key=file("terra-k8s-key.pub")
+  public_key = file("../terra-k8s-key.pub")
 }
 
 # vpc and security group
