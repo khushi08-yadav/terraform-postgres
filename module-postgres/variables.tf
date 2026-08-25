@@ -22,3 +22,4 @@ variable "root_block_device_volume_size" {
   default = 30
   type    = number
 }
+

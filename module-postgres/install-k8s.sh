@@ -28,10 +28,22 @@ apt update -y
 apt install -y kubelet kubeadm kubectl
 
 # Initialize Kubernetes cluster
-kubeadm init --pod-network-cidr=192.168.0.0/16
+kubeadm init --pod-network-cidr=10.244.0.0/16
 
 # Configure kubectl
 mkdir -p /root/.kube
 cp /etc/kubernetes/admin.conf /root/.kube/config
+export KUBECONFIG=/etc/kubernetes/admin.conf
+# Install Flannel
+kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
 
-echo "Kubernetes setup completed!"
+# Allow workloads on single control-plane node
+kubectl taint nodes --all node-role.kubernetes.io/control-plane- || true
+
+# Install Helm
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+# Verify Helm
+helm version
+
+echo "Kubernetes + Helm setup completed!"
