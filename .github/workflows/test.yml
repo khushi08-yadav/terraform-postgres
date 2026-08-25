@@ -1,4 +1,4 @@
-name: ArgoCD Sync Workflow
+name: Postgres Helm Deploy Workflow
 
 on:
   push:
