@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: postgres
-  tag: "15"
+  repository: khushi08yadav/new-postgres-k8s
+  tag: "9eda1f"
   pullPolicy: IfNotPresent
 
 postgres:

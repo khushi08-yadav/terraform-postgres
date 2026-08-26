@@ -17,46 +17,47 @@ spec:
       labels:
         app: postgres-migration
 
-  spec:
-    restartPolicy: OnFailure
 
-    containers:
-      - name: migration
-        image: postgres:16
+    spec:
+      restartPolicy: OnFailure
 
-        env:
-          - name: PGHOST
-            value: postgres-service
+      containers:
+        - name: migration
+          image: postgres:16
 
-          - name: PGPORT
-            value: "5432"
+          env:
+            - name: PGHOST
+              value: postgres-service
 
-          - name: PGDATABASE
-            value: {{ .Values.postgres.db | quote }}
+            - name: PGPORT
+              value: "5432"
 
-          - name: PGUSER
-            value: {{ .Values.postgres.user | quote }}
+            - name: PGDATABASE
+              value: {{ .Values.postgres.db | quote }}
 
-          - name: PGPASSWORD
-            value: {{ .Value.postgres.password | quote }}
+            - name: PGUSER
+              value: {{ .Values.postgres.user | quote }}
 
-        command:
-          - sh
-          - -c
-          - |
-            echo "Waiting for PostgreSQL.."
+            - name: PGPASSWORD
+              value: {{ .Values.postgres.password | quote }}
 
-            until pg_isready -h "$PGHOST" -p "$PGPORT" -U "$PGUSER"; do
-              sleep 3
-            done
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for PostgreSQL..."
 
-            echo "PostgreSQL is ready"
+              until pg_isready -h "$PGHOST" -p "$PGPORT" -U "$PGUSER"; do
+                sleep 3
+              done
 
-            echo "Running database migration..."
+              echo "PostgreSQL is ready"
 
-            psql -f /migration/init.sql
+              echo "Running database migration..."
+          
+              psql -d "$PGDATABASE" -f /migrations/init.sql
 
-            echo "Migration completed successfully"
+              echo "Migration completed successfully"
 
         volumeMounts:
           - name: migration-sql
@@ -66,10 +67,3 @@ spec:
       - name: migration-sql
         configMap:
           name: postgres-init-sql
-
-
-
-
-
-
-          ii

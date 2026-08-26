@@ -7,7 +7,7 @@ metadata:
 
 spec:
   serviceName: "postgres-service"
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
 
   selector:
     matchLabels:
@@ -21,7 +21,8 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:16
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
 
           env:
             - name: POSTGRES_DB
@@ -38,15 +39,8 @@ spec:
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
-            - name: init-scripts
-              mountPath: /docker-entrypoint-initdb.d
 
-        volumes:
-          - name: init-scripts
-            configMap:
-              name: postgres-init-sql
-
-    volumeClaimTemplates:
+  volumeClaimTemplates:
       - metadata:
           name: postgres-data
 
@@ -55,4 +49,6 @@ spec:
 
           resources:
             requests:
-              storage: 5Gi 
+              storage: {{ .Values.postgres.storage.size }}
+          
+          storageClassName: {{ .Values.postgres.storage.storageClass }}
