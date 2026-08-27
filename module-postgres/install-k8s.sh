@@ -63,6 +63,18 @@ export KUBECONFIG=/etc/kubernetes/admin.conf
 # Install Flannel
 kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
 
+# Install local-path storage provisioner
+kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+
+# Wait for storage provisioner
+kubectl rollout status deployment/local-path-provisioner \
+  -n local-path-storage \
+  --timeout=120s
+
+# Make local-path the default StorageClass
+kubectl patch storageclass local-path \
+  -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
 # Allow workloads on single control-plane node
 kubectl taint nodes --all node-role.kubernetes.io/control-plane- || true
 
