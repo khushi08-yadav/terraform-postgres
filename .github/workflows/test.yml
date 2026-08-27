@@ -86,8 +86,15 @@ jobs:
           ssh -o StrictHostKeyChecking=no \
             -i ~/.ssh/id_file \
             ubuntu@${{ secrets.EC2_HOST }} \
-            "cd ~/project/postgres-k8s && \
-             git pull origin main && \
+            "mkdir -p ~/project && \
+             cd ~/project && \
+             if [ -d terraform-postgres/.git ]; then \
+               cd terraform-postgres && \
+               git pull origin main; \
+             else \
+               git clone https://github.com/khushi08-yadav/terraform-postgres.git && \
+               cd terraform-postgres; \
+             fi && \
              helm upgrade --install postgres-k8s . \
              --namespace postgresql \
              --create-namespace \
