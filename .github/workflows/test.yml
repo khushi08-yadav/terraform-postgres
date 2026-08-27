@@ -81,9 +81,12 @@ jobs:
           version: latest
 
 
-      - name: Deploy PostgreSQL with Helm
+           - name: Deploy PostgreSQL with Helm
         run: |
           ssh -o StrictHostKeyChecking=no \
+            -o ServerAliveInterval=30 \
+            -o ServerAliveCountMax=10 \
+            -o ConnectTimeout=30 \
             -i ~/.ssh/id_file \
             ubuntu@${{ secrets.EC2_HOST }} \
             "mkdir -p ~/project && \
@@ -95,12 +98,17 @@ jobs:
                git clone https://github.com/khushi08-yadav/terraform-postgres.git && \
                cd terraform-postgres; \
              fi && \
+             echo 'Waiting for Kubernetes...' && \
+             until kubectl get nodes >/dev/null 2>&1; do \
+               sleep 10; \
+             done && \
+             echo 'Kubernetes is ready' && \
              helm upgrade --install postgres-k8s . \
              --namespace postgresql \
              --create-namespace \
              --set image.repository=khushi08yadav/new-postgres-k8s \
              --set image.tag=$TAG"
-
+             
       - name: Verify PostgreSQL Deployment
         run: |
           ssh -o StrictHostKeyChecking=no \
