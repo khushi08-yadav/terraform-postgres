@@ -93,7 +93,7 @@ jobs:
           version: latest
 
 
-           - name: Deploy PostgreSQL with Helm
+      - name: Deploy PostgreSQL with Helm
         run: |
           ssh -o StrictHostKeyChecking=no \
             -o ServerAliveInterval=30 \
