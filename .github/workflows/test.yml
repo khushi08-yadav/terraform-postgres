@@ -33,7 +33,7 @@ jobs:
         run: |
           docker build \
             -t khushi08yadav/new-postgres-k8s:$TAG \
-            ./postgres-k8s
+            .
 
 
       - name: Push Docker Image
