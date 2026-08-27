@@ -74,6 +74,18 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
 
+      - name: Wait for Kubernetes
+        run: |
+          for i in {1..30}; do
+            ssh -o StrictHostKeyChecking=no \
+              -o ConnectTimeout=10 \
+              -i ~/.ssh/id_file \
+              ubuntu@${{ secrets.EC2_HOST }} \
+              "kubectl get nodes" && break
+
+            echo "Waiting for Kubernetes..."
+            sleep 10
+          done
 
       - name: Setup Helm
         uses: azure/setup-helm@v4
