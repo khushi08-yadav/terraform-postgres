@@ -178,3 +178,8 @@ terraform destroy -auto-approve
 ```
 
 This project was built to practice Terraform, Docker, Kubernetes, Helm and GitHub Actions together in one deployment workflow.
+
+
+## Project Status
+
+Completed and successfully tested using GitHub Actions.
