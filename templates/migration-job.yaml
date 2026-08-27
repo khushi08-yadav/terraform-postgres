@@ -17,7 +17,6 @@ spec:
       labels:
         app: postgres-migration
 
-
     spec:
       restartPolicy: OnFailure
 
@@ -54,16 +53,16 @@ spec:
               echo "PostgreSQL is ready"
 
               echo "Running database migration..."
-          
+
               psql -d "$PGDATABASE" -f /migrations/init.sql
 
               echo "Migration completed successfully"
 
-        volumeMounts:
-          - name: migration-sql
-            mountPath: /migrations
+          volumeMounts:
+            - name: migration-sql
+              mountPath: /migrations
 
-    volumes:
-      - name: migration-sql
-        configMap:
-          name: postgres-init-sql
+      volumes:
+        - name: migration-sql
+          configMap:
+            name: postgres-init-sql
