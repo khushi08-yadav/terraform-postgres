@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 apt update -y
 
 # Install Docker and containerd
@@ -12,6 +14,28 @@ systemctl start containerd
 
 # Disable swap
 swapoff -a
+
+# Disable swap permanently
+sed -i '/ swap / s/^/#/' /etc/fstab
+
+# Load required Kubernetes kernel modules
+modprobe overlay
+modprobe br_netfilter
+
+# Make modules load automatically after reboot
+cat <<EOF > /etc/modules-load.d/k8s.conf
+overlay
+br_netfilter
+EOF
+
+# Configure Kubernetes networking
+cat <<EOF > /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward = 1
+EOF
+
+sysctl --system
 
 # Install Kubernetes tools
 apt install -y apt-transport-https ca-certificates curl gpg
@@ -30,10 +54,12 @@ apt install -y kubelet kubeadm kubectl
 # Initialize Kubernetes cluster
 kubeadm init --pod-network-cidr=10.244.0.0/16
 
-# Configure kubectl
+# Configure kubectl for root
 mkdir -p /root/.kube
 cp /etc/kubernetes/admin.conf /root/.kube/config
+
 export KUBECONFIG=/etc/kubernetes/admin.conf
+
 # Install Flannel
 kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
 
